@@ -6,18 +6,28 @@ body {
 .dashboard {
   display: flex;
   height: 100vh;
+  width: 99vw;
+}
+
+.map-view{
+  width: 100%;
 }
 
 .sidebar {
-  width: 260px;
+  width: 20vw;
+  /* position: relative; */
   background: #0f172a;
   color: white;
   padding: 20px;
   overflow-y: auto;
+  /* height: 500px; */
+  /* text-align: center; */
+  grid-column: 2;
 }
 
 .sidebar h2 {
   margin-bottom: 15px;
+  text-align: center;
 }
 
 .sidebar li {
@@ -31,6 +41,10 @@ body {
 
 .sidebar li:hover {
   background: #334155;
+}
+
+.sidebar-list{
+  overflow-y: auto;
 }
 
 .voltage {
@@ -47,6 +61,8 @@ body {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
+  color: #000;
+  height: 20%;
 }
 
 .card {

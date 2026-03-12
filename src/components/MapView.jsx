@@ -1,16 +1,23 @@
 import React from "react";
-import {
-  MapContainer,
-  TileLayer,
-  GeoJSON,
-  Marker,
-  Popup,
-  LayersControl,
-} from "react-leaflet";
-import L from "leaflet";
-import PointPopup from "./PointPopup";
+import { MapContainer, TileLayer, GeoJSON, Popup } from "react-leaflet";
+import "../styles/dashboard.css";
 
-const { BaseLayer, Overlay } = LayersControl;
+import L from "leaflet";
+
+function estimateHeight(ndvi) {
+  if (ndvi > 0.7) return 15;
+  if (ndvi > 0.5) return 8;
+  if (ndvi > 0.3) return 3;
+  return 1;
+}
+
+function calculateRisk(height) {
+  const clearance = 8.5;
+
+  if (height > clearance) return "CRITICAL";
+  if (height > clearance * 0.8) return "WARNING";
+  return "SAFE";
+}
 
 function getColor(risk) {
   if (risk === "CRITICAL") return "red";
@@ -18,65 +25,77 @@ function getColor(risk) {
   return "green";
 }
 
-function createIcon(color) {
-  return L.divIcon({
-    className: "custom-icon",
-    html: `<div style="
-      background:${color};
-      width:12px;
-      height:12px;
-      border-radius:50%;
-      border:2px solid white
-    "></div>`,
-  });
-}
-
-function MapView({ lines, points, selectedLine }) {
+function MapView({ powerLines, ndviPoints }) {
   const center = [17.36, 80.23];
+
+  // style for transmission lines
+  const lineStyle = {
+    color: "#0077ff",
+    weight: 2,
+  };
+
+  // convert NDVI points to markers
+  const pointToLayer = (feature, latlng) => {
+    const ndvi = feature.properties.ndvi;
+
+    const height = estimateHeight(ndvi);
+    const risk = calculateRisk(height);
+
+    const color = getColor(risk);
+
+    const marker = L.circleMarker(latlng, {
+      radius: 6,
+      fillColor: color,
+      color: "white",
+      weight: 1,
+      fillOpacity: 0.9,
+    });
+
+    marker.bindPopup(`
+      <b>Vegetation Monitoring Point</b><br/>
+      NDVI: ${ndvi.toFixed(3)}<br/>
+      Height: ${height} m<br/>
+      Risk: ${risk}
+    `);
+
+    return marker;
+  };
+
+  const lineOfLayer = (feature) => {
+    const volt = feature.properties.voltage;
+
+    // const marker = L.circleMarker(latlng, {
+    //   radius: 6,
+    //   fillColor: color,
+    //   color: "white",
+    //   weight: 1,
+    //   fillOpacity: 0.9,
+    // });
+    const lineStyle = {
+      color: "#0077ff",
+      weight: 2,
+    };
+
+    lineStyle.bindPopup(`
+      <b>Monitoring Line</b><br/>
+      Volt: ${volt.toFixed(3)}
+    `);
+  };
 
   return (
     <MapContainer
+      className="map-view"
       center={center}
-      zoom={7}
-      style={{ height: "600px", width: "100%" }}
+      zoom={9}
+      style={{ height: "600px" }}
     >
-      <LayersControl position="topright">
-        <BaseLayer checked name="OpenStreetMap">
-          <TileLayer
-            attribution="&copy; OSM"
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-        </BaseLayer>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        <Overlay checked name="Transmission Lines">
-          <GeoJSON
-            data={lines}
-            style={{
-              color: "#0077ff",
-              weight: 3,
-            }}
-          />
-        </Overlay>
+      {/* Transmission Lines */}
+      <GeoJSON data={powerLines} style={lineStyle} pointToLayer={lineOfLayer} />
 
-        <Overlay checked name="Vegetation Monitoring Points">
-          <>
-            {points.map((p, idx) => {
-              const [lon, lat] = p.geometry.coordinates;
-
-              return (
-                <Marker
-                  position={[lat, lon]}
-                  icon={createIcon(getColor(p.properties.risk))}
-                >
-                  <Popup>
-                    <PointPopup data={p.properties} />
-                  </Popup>
-                </Marker>
-              );
-            })}
-          </>
-        </Overlay>
-      </LayersControl>
+      {/* NDVI Monitoring Points */}
+      <GeoJSON data={ndviPoints} pointToLayer={pointToLayer} />
     </MapContainer>
   );
 }

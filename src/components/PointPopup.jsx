@@ -1,28 +1,29 @@
 import React from "react";
+import "../styles/dashboard.css";
 
-function PointPopup({ data }) {
+function PointPopup({ lat, lon, ndvi, height, risk }) {
   return (
     <div>
-      <h3>{data.line}</h3>
+      <h3>Vegetation Monitoring Point</h3>
 
       <p>
-        <b>NDVI:</b> {data.ndvi}
+        <b>NDVI:</b> {ndvi.toFixed(3)}
       </p>
 
       <p>
-        <b>Tree Height:</b> {data.height} m
+        <b>Estimated Height:</b> {height} m
       </p>
 
       <p>
-        <b>Risk:</b> {data.risk}
+        <b>Risk Level:</b> {risk}
       </p>
 
       <p>
-        <b>Lat:</b> {data.lat}
+        <b>Latitude:</b> {lat}
       </p>
 
       <p>
-        <b>Lon:</b> {data.lon}
+        <b>Longitude:</b> {lon}
       </p>
     </div>
   );

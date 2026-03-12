@@ -1,11 +1,12 @@
 import React from "react";
+import "../styles/dashboard.css";
 
 function Sidebar({ lines, onSelectLine }) {
   return (
     <div className="sidebar">
       <h2>Transmission Lines</h2>
 
-      <ul>
+      <ul className="sidebar-list">
         {lines.map((line, idx) => (
           <li key={idx} onClick={() => onSelectLine(line)}>
             <strong>{line.properties.name}</strong>
