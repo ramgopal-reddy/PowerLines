@@ -1,13 +1,21 @@
 import React from "react";
 import { MapContainer, TileLayer, GeoJSON, Popup } from "react-leaflet";
 import "../styles/dashboard.css";
-
 import L from "leaflet";
 
+import { FaTree } from "react-icons/fa";
+import { renderToString } from "react-dom/server";
+
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../components/ui/hover-card";
+
 function estimateHeight(ndvi) {
-  if (ndvi > 0.7) return 15;
-  if (ndvi > 0.5) return 8;
-  if (ndvi > 0.3) return 3;
+  if (ndvi > 0.6) return 15;
+  if (ndvi > 0.4) return 8;
+  if (ndvi > 0.2) return 3;
   return 1;
 }
 
@@ -28,13 +36,25 @@ function getColor(risk) {
 function MapView({ powerLines, ndviPoints }) {
   const center = [17.36, 80.23];
 
-  // style for transmission lines
+  // ---------- POWER LINE STYLE ----------
   const lineStyle = {
     color: "#0077ff",
     weight: 2,
   };
 
-  // convert NDVI points to markers
+  // ---------- POWER LINE POPUP ----------
+  const onEachLine = (feature, layer) => {
+    const volt = feature.properties?.voltage;
+    const name = feature.properties?.name;
+
+    layer.bindPopup(`
+      <b>Transmission Line</b><br/>
+      Name: ${name || "Unknown"}<br/>
+      Voltage: ${volt || "N/A"} kV
+    `);
+  };
+
+  // ---------- NDVI POINTS ----------
   const pointToLayer = (feature, latlng) => {
     const ndvi = feature.properties.ndvi;
 
@@ -43,13 +63,27 @@ function MapView({ powerLines, ndviPoints }) {
 
     const color = getColor(risk);
 
-    const marker = L.circleMarker(latlng, {
-      radius: 6,
-      fillColor: color,
-      color: "white",
-      weight: 1,
-      fillOpacity: 0.9,
+    //---------- circleMarker Change required ----------
+
+    // const marker = L.circleMarker(latlng, {
+    //   radius: 6,
+    //   fillColor: color,
+    //   color: "white",
+    //   weight: 1,
+    //   fillOpacity: 0.9,
+    // });
+
+    const treeIcon = L.divIcon({
+      html: renderToString(<FaTree color={color} size={16} />),
+      className: "custom-tree-icon",
+      iconSize: [10, 10],
     });
+
+    const marker = L.marker(latlng, {
+      icon: treeIcon,
+    });
+
+    // -------------------------------------------------
 
     marker.bindPopup(`
       <b>Vegetation Monitoring Point</b><br/>
@@ -59,27 +93,6 @@ function MapView({ powerLines, ndviPoints }) {
     `);
 
     return marker;
-  };
-
-  const lineOfLayer = (feature) => {
-    const volt = feature.properties.voltage;
-
-    // const marker = L.circleMarker(latlng, {
-    //   radius: 6,
-    //   fillColor: color,
-    //   color: "white",
-    //   weight: 1,
-    //   fillOpacity: 0.9,
-    // });
-    const lineStyle = {
-      color: "#0077ff",
-      weight: 2,
-    };
-
-    lineStyle.bindPopup(`
-      <b>Monitoring Line</b><br/>
-      Volt: ${volt.toFixed(3)}
-    `);
   };
 
   return (
@@ -92,9 +105,9 @@ function MapView({ powerLines, ndviPoints }) {
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       {/* Transmission Lines */}
-      <GeoJSON data={powerLines} style={lineStyle} pointToLayer={lineOfLayer} />
+      <GeoJSON data={powerLines} style={lineStyle} onEachFeature={onEachLine} />
 
-      {/* NDVI Monitoring Points */}
+      {/* NDVI Points */}
       <GeoJSON data={ndviPoints} pointToLayer={pointToLayer} />
     </MapContainer>
   );

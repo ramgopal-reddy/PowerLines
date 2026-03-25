@@ -62,9 +62,12 @@ body {
 .stats {
   display: flex;
   gap: 10px;
+  text-align: center;
+  align-items: center;
+  justify-items: center;
   margin-bottom: 10px;
   color: #000;
-  height: 20%;
+  height: 15%;
 }
 
 .card {

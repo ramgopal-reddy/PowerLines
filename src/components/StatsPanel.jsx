@@ -2,9 +2,9 @@ import React from "react";
 import "../styles/dashboard.css";
 
 function estimateHeight(ndvi) {
-  if (ndvi > 0.7) return 15;
-  if (ndvi > 0.5) return 8;
-  if (ndvi > 0.3) return 3;
+  if (ndvi > 0.6) return 15;
+  if (ndvi > 0.4) return 8;
+  if (ndvi > 0.2) return 3;
   return 1;
 }
 

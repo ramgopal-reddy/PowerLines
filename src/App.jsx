@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import StatsPanel from "./components/StatsPanel";
+import { HoverCardDemo } from "./components/hoverPop";
 
 function App() {
   const [powerLines, setPowerLines] = useState(null);
