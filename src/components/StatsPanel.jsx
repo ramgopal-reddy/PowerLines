@@ -11,11 +11,16 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
-import { FaLeaf, FaShieldAlt, FaExclamationTriangle, FaListAlt } from "react-icons/fa";
+import {
+  FaLeaf,
+  FaShieldAlt,
+  FaExclamationTriangle,
+  FaListAlt,
+} from "react-icons/fa";
 
 function estimateHeight(ndvi) {
   if (ndvi > 0.6) return 15;
-  if (ndvi > 0.4) return 8;
+  if (ndvi > 0.4) return 9;
   if (ndvi > 0.2) return 3;
   return 1;
 }
@@ -56,7 +61,8 @@ function StatsPanel({ points, lines = [] }) {
     else if (height === 15) highCanopy++;
   });
 
-  const avgNdvi = points.length > 0 ? (totalNdvi / points.length).toFixed(3) : "0.000";
+  const avgNdvi =
+    points.length > 0 ? (totalNdvi / points.length).toFixed(3) : "0.000";
 
   // Recharts Data Sets
   const riskData = [
@@ -163,7 +169,10 @@ function StatsPanel({ points, lines = [] }) {
         </div>
         <div className="chart-container-inner">
           <ResponsiveContainer width="99%" height={120}>
-            <BarChart data={canopyData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+            <BarChart
+              data={canopyData}
+              margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
+            >
               <XAxis
                 dataKey="name"
                 axisLine={false}
@@ -175,8 +184,16 @@ function StatsPanel({ points, lines = [] }) {
                 tickLine={false}
                 tick={{ fill: "#94a3b8", fontSize: 8 }}
               />
-              <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} content={<CustomTooltip />} />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]} fill="#38bdf8" barSize={16} />
+              <Tooltip
+                cursor={{ fill: "rgba(255,255,255,0.05)" }}
+                content={<CustomTooltip />}
+              />
+              <Bar
+                dataKey="count"
+                radius={[4, 4, 0, 0]}
+                fill="#38bdf8"
+                barSize={16}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -186,4 +203,3 @@ function StatsPanel({ points, lines = [] }) {
 }
 
 export default StatsPanel;
-
