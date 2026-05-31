@@ -13,7 +13,10 @@ function Sidebar({
 }) {
   const handleItemClick = (line) => {
     // Toggle active state or select
-    if (selectedLine && selectedLine.properties?.name === line.properties?.name) {
+    if (
+      selectedLine &&
+      selectedLine.properties?.name === line.properties?.name
+    ) {
       onSelectLine(null); // Deselect if already selected
     } else {
       onSelectLine(line);
@@ -81,9 +84,10 @@ function Sidebar({
           </div>
         ) : (
           lines.map((line, idx) => {
-            const isSelected = selectedLine?.properties?.name === line.properties?.name;
+            const isSelected =
+              selectedLine?.properties?.name === line.properties?.name;
             const voltage = line.properties?.voltage || "N/A";
-            const name = line.properties?.name || "Unnamed Grid Line";
+            const name = line.properties?.name || "State Grid Line";
             const operator = line.properties?.operator || "State Grid Operator";
 
             return (
@@ -96,9 +100,7 @@ function Sidebar({
                   <div className="line-name">{name}</div>
                   <div className="line-operator">{operator}</div>
                 </div>
-                <div className={getVoltageClass(voltage)}>
-                  {voltage} kV
-                </div>
+                <div className={getVoltageClass(voltage)}>{voltage} kV</div>
               </li>
             );
           })
@@ -109,4 +111,3 @@ function Sidebar({
 }
 
 export default Sidebar;
-
